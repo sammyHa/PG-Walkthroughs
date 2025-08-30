@@ -11,11 +11,11 @@
 ---
 ## Overview
 The Sorcerer machine was a medium-difficulty Linux target on Proving Grounds.  
-- **Initial foothold** was gained via port `7742` `/zipefiles` directory. which led to downloading .zip file `max.zip` contained `ssh` private key.
+- **Initial foothold** web server leaks to gain an initial foothold via port `7742` `/zipefiles` directory. which led to downloading .zip file `max.zip` contained `ssh` private key.
 - **Privilege escalation** was achieved by exploiting a misconfigured SUID binary (`/usr/sbin/start-stop-daemon`), which allowed execution of arbitrary commands as root.  
 - This resulted in complete system compromise, including access to both the local and root flags.  
 
-The machine highlights common real-world misconfigurations: exposed web management consoles, sensitive files in archives, and dangerous SUID binaries.  
+The machine highlights common real-world misconfigurations: web server leaks, sensitive files in archives, and dangerous SUID binaries.  
 
 ## 1. Reconnaissance
 
