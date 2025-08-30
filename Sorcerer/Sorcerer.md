@@ -34,8 +34,9 @@ nmap -sC -sV -T4 -oA scans/nmap_initial $ip
 | 111  | rpcbind | 2-4                 |
 | 2049 | nfs     |                     |
 | 8080 | http    | Apache Tomcat 7.0.4 |
-| 7742 | http    |  unkown             |
-
+| 7742 | http    |  Nginx             |
+| 33603 | nlockmgr    |  unknown       |
+| ... | ...    |  ...             |
 
 ![](images/2025-08-30_7.png)
 
