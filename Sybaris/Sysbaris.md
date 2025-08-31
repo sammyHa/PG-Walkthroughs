@@ -1,12 +1,12 @@
 
-| **Details**    | **Values**                           |
-| :------------- | :----------------------------------- |
-| **Platform**   | `Proving Grounds`                    |
-| **Machine**    | `Sybaris`                            |
-| **Difficulty** | `Medium`                             |
-| **OS**         | `Linux`                              |
-| **Key Skills** | `RCE`, `FTP`, `Redis RCE`            |
-| **Tools Used** | `Nmap`, `Gobuster`, `Reverse Shell`  |
+| **Details**    | **Values**                             |
+| :------------- | :-----------------------------------   |
+| **Platform**   | `Proving Grounds`                      |
+| **Machine**    | `Sybaris`                              |
+| **Difficulty** | `Medium`                               |
+| **OS**         | `Linux`                                |
+| **Key Skills** | `RCE`, `FTP`, `Redis RCE`, `cron job`  |
+| **Tools Used** | `Nmap`, `linpeas.sh`, `Reverse Shell`  |
 
 ## Overview
 [Sybaris] is a Linux machine that features an improperly configured [Redis] server, allowing for arbitrary module loading. This vulnerability is leveraged by uploading a malicious module through an anonymous FTP service to gain initial execution. Privilege escalation to root is achieved by exploiting a cron job that runs with a writable `LD_LIBRARY_PATH`, enabling the execution of a malicious shared object file with highest privileges.
