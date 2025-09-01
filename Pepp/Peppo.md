@@ -22,7 +22,7 @@ nmap -sC -sV -T4 -A -O -oN service-scan.log 192.168.195.60
 
 **Nmap Scan Result**:
 
-![[OSCP/08_Screenshots/PG-Peppo/2025-08-31.png]]
+![](images/2025-08-31.png)
 ### Open Ports & Services
 
 | Port      | State | Service    | Version                                       | Notes |
@@ -40,8 +40,8 @@ nmap -sC -sV -T4 -A -O -oN service-scan.log 192.168.195.60
 Hosting a flexible project management web application`Redmine` build on Ruby on Rails Framework .
 The application includes login and registration pages; however, registration errors indicate accounts require administrator approval.
 
-![[OSCP/08_Screenshots/PG-Peppo/2025-08-31_3.png]]
-![[OSCP/08_Screenshots/PG-Peppo/2025-08-31_5.png]]
+![](images/2025-08-31_3.png)
+![](images/2025-08-31_5.png)
 
 - Googled the default credentials for `Redmine` and it came back with `admin:admin` I was able to login. and changed the password. 
 
