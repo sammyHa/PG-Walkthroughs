@@ -27,7 +27,7 @@ nmap -sV -sC -A -O -p- --open -oN enum/fingerpring-scan.log $ip
 | -------- | ----- | ------- | ---------------------------------------- | -------------------- |
 | 21/tcp   | open  | ftp     | vsftpd 3.0.2                             |                      |
 | 22/tcp   | open  | ssh     | OpenSSH 7.4                              |                      |
-| 80/tcp   | open  | http    | Apache httpd 2.4.6 ((CentOS) PHP/7.3.22) | Potential Web Vector |
+| 80/tcp   | open  | http    | Apache httpd 2.4.6 ((CentOS) PHP/7.3.22) |                      |
 | 6379/tcp | open  | redis   | Redis key-value store 5.0.9              |                      |
 
 <!-- Optional: Add a full port scan if necessary -->
