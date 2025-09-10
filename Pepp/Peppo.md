@@ -182,7 +182,8 @@ After executing the above commands and export the path environment variable whic
 6. `local.txt` was at the current user directory.
 ### User Flag
 ```bash
-b8078f909f84875cfa344be5bcedbddb
+#b8078f909f84875cfa344be5bcedbddb
+b8078f909f84xxxxxxxxxxxxxxxxxxxxx
 ```
 ![](images/2025-09-01_14.png)
 
@@ -233,7 +234,8 @@ docker run -v /:/mnt -it redmine chroot /mnt bash
 
 The root flag was located at `/root/proof.txt`
 ```bash
-1544d6f0e9588d5190094377b8bafb56
+#1544d6f0e9588d5190094377b8bafb56
+1544d6f0e9588dxxxxxxxxxxxxxxxxxxx
 ```
 
 ## 5. Conclusion & Lessons Learned
